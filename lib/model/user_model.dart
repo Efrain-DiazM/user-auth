@@ -11,7 +11,7 @@ class UserModel {
       id: json['\$id'],
       username: json['username'],
       email: json['email'],
-      userId: json['userIdLogged'],
+      userId: json['userId'],
     );
   }
 

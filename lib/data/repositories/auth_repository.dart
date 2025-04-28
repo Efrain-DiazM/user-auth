@@ -1,4 +1,5 @@
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart' as models;
 
 class AuthRepository {
   final Account account;
@@ -47,6 +48,18 @@ class AuthRepository {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  // Nuevo método para obtener el usuario actual
+  Future<models.User> getCurrentUser() async {
+    try {
+      final user = await account.get();
+      print('Usuario obtenido de Appwrite: ${user.$id}'); // Depuración
+      return user;
+    } catch (e) {
+      print('Error al obtener usuario autenticado: $e'); // Depuración
+      rethrow;
     }
   }
 }

@@ -14,16 +14,16 @@ class HomePage extends StatelessWidget {
 
   void _submitUser(UserController controller) {
     if (_formKey.currentState!.validate()) {
-      final loggedInUserId = Get.find<AuthController>().currentUserId;
-      print('id logueado' + loggedInUserId.value);
+      final loggedInUserId = Get.find<AuthController>().currentUserId.value;
+      print('id logueado' + loggedInUserId);
       final user = UserModel(
         id: '',
         username: _usernameController.text,
         email: _emailController.text,
-        userId: loggedInUserId.value,
+        userId: loggedInUserId,
       );
 
-      controller.addUser(user, loggedInUserId.value);
+      controller.addUser(user, loggedInUserId);
 
       _usernameController.clear();
       _emailController.clear();

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:users_auth/controllers/auth_controller.dart';
 
 import 'package:users_auth/model/user_model.dart';
 import 'package:users_auth/data/repositories/user_repository.dart';
@@ -15,19 +16,31 @@ class UserController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchUsers();
+    // fetchUsers();
+    print('UserController onInit ejecutado');
   }
 
   Future<void> fetchUsers() async {
     try {
+      print('Iniciando fetchUsers'); // Depuración
       isLoading.value = true;
-      final fetchedUsers = await repository.getUsers();
+      final loggedInUserId = Get.find<AuthController>().currentUserId.value;
+      print('loggedInUserId en fetchUsers: $loggedInUserId'); // Depuración
+      if (loggedInUserId.isEmpty) {
+        throw Exception('No authenticated user found');
+      }
+      print(
+          'Llamando a getUsers con loggedInUserId: $loggedInUserId'); // Depuración
+      final fetchedUsers = await repository.getUsers(loggedInUserId);
+      print('Usuarios obtenidos: $fetchedUsers'); // Depuración
       users.assignAll(fetchedUsers);
     } catch (e) {
       error.value = e.toString();
+      print('Error al obtener usuarios: $e'); // Depuración
       users.clear();
     } finally {
       isLoading.value = false;
+      print('fetchUsers finalizado'); // Depuración
     }
   }
 
@@ -35,6 +48,7 @@ class UserController extends GetxController {
     try {
       final newUser = await repository.createUser(user, loggedInUserId);
       users.add(newUser);
+      await fetchUsers();
     } catch (e) {
       error.value = e.toString();
     }

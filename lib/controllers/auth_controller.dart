@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:users_auth/controllers/user_controller.dart';
 
 import 'package:users_auth/data/repositories/auth_repository.dart';
 import 'package:users_auth/presentation/pages/home_page.dart';
@@ -25,19 +26,27 @@ class AuthController extends GetxController {
   }
 
   Future<void> login(String email, String password) async {
-    isLoading.value = true;
-    error.value = '';
-    currentUserId.value = '';
+  isLoading.value = true;
+  error.value = '';
+  currentUserId.value = '';
 
-    try {
-      await _authRepository.login(email: email, password: password);
-      Get.offAll(() => HomePage());
-    } catch (e) {
-      error.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
+  try {
+    await _authRepository.login(email: email, password: password);
+    final user = await _authRepository.getCurrentUser();
+    print('Usuario autenticado: ${user.$id}'); // Depuración
+    currentUserId.value = user.$id;
+    print('currentUserId establecido: ${currentUserId.value}'); // Depuración
+    Get.offAll(() => HomePage());
+    // Llamar a fetchUsers después de navegar
+    final userController = Get.find<UserController>();
+    await userController.fetchUsers();
+  } catch (e) {
+    error.value = e.toString();
+    print('Error en login: $e'); // Depuración
+  } finally {
+    isLoading.value = false;
   }
+}
 
   Future<void> register(String email, String password, String name) async {
     isLoading.value = true;
